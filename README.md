@@ -1,0 +1,6 @@
+## Instalasi
+
+```
+$ npm install
+
+```
