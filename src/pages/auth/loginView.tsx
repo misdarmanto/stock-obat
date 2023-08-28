@@ -60,14 +60,14 @@ export default function LoginView() {
 						value={userPassword}
 						onChange={(e) => setUserPassword(e.target.value)}
 					/>
-					<Typography variant="small" className="flex justify-center">
+					{/* <Typography variant="small" className="flex justify-center">
 						lupa password?
 						<Link to={"/reset-password"}>
 							<Typography variant="small" color="blue" className="ml-1">
 								reset password
 							</Typography>
 						</Link>
-					</Typography>
+					</Typography> */}
 				</CardBody>
 				<CardFooter className="pt-0">
 					<Button variant="gradient" fullWidth onClick={handleSubmit}>

@@ -1,3 +1,6 @@
+import { Button } from "@material-tailwind/react";
+import { IStocks } from "../models/stock";
+
 export interface ITableData {
 	tableData: {
 		header: string[];
@@ -22,19 +25,45 @@ const TableStyle = (props: ITableData) => {
 					</tr>
 				</thead>
 				<tbody>
-					{props.tableData.body.map((items: string[], index: number) => {
+					{props.tableData.body.map((items: IStocks[] | any, index: number) => {
 						return (
-							<tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-								{items.map((item: string, key: number) => {
-									return (
-										<td key={key} className="px-6 py-4">
-											{item}
-										</td>
-									);
-								})}
-								<td className="px-6 py-4">Hapus</td>
-								<td className="px-6 py-4">Edit</td>
-								<td className="px-6 py-4">Detail</td>
+							<tr
+								key={index}
+								className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+							>
+								{/* {items.map((item : IStocks) =>)} */}
+								<td className="px-6 py-4">
+									{items[index].namaObat || "_"}
+								</td>
+								<td className="px-6 py-4">
+									{items[index].tglMasuk || "_"}
+								</td>
+								<td className="px-6 py-4">
+									{items[index].tglExpired || "_"}
+								</td>
+								<td className="px-6 py-4">{items[index].batch || "_"}</td>
+								<td className="px-6 py-4">{items[index].stock || "_"}</td>
+
+								<td className="px-6 py-4 ">
+									<Button
+										variant="outlined"
+										size="sm"
+										color="blue-gray"
+									>
+										Update
+									</Button>
+								</td>
+								<td className="px-6 py-4 flex flex-row gap-2">
+									<Button variant="outlined" size="sm" color="red">
+										Hapus
+									</Button>
+									<Button variant="outlined" size="sm">
+										Edit
+									</Button>
+									<Button variant="outlined" size="sm" color="teal">
+										Detail
+									</Button>
+								</td>
 							</tr>
 						);
 					})}

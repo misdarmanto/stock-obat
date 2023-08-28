@@ -2,10 +2,11 @@ import { BsPerson } from "react-icons/bs";
 import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { Disclosure } from "@headlessui/react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { BiBox, BiCross, BiHome, BiMenu } from "react-icons/bi";
 import { signOutFirebase } from "../utils/firebase";
 import { IAppContextModel, useAppContext } from "../context/app.context";
+import { Alert } from "@material-tailwind/react";
 
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(" ");
@@ -16,7 +17,7 @@ type Props = {
 };
 
 const MainLayout: React.FC<Props> = ({ children }) => {
-	const { setCurrentUser }: IAppContextModel = useAppContext();
+	const { setCurrentUser, setErrorApp, errorApp }: IAppContextModel = useAppContext();
 	const navigate = useNavigate();
 
 	const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -43,7 +44,6 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 	const [navigationActive, setNavigationActive] = useState("Dashboard");
 
 	const renderListNavigation = NAVIGATIONS_LIST.map((item: any) => {
-		console.log(navigationActive);
 		return (
 			<>
 				{!item.children && (
@@ -221,7 +221,7 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 					<div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
 						<h1 className="text-md text-gray-700">
 							<span className="font-extrabold text-2xl text-blue-500 mx-1">
-								Stock Obat
+								Stok Obat
 							</span>
 						</h1>
 						<div className="mt-5 flex-1 flex flex-col">
@@ -282,6 +282,21 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 
 				<main className="flex-1 relative overflow-y-auto focus:outline-none bg-gray-100">
 					<div className="px-2 py-2 md:py-6 md:px-6 m-0">{children}</div>
+
+					{errorApp.isError && (
+						<Alert
+							open={true}
+							color="red"
+							className="absolute z-index-20 right-5 bottom-5 w-96"
+							onClose={() => setErrorApp({ isError: false, message: "" })}
+							animate={{
+								mount: { y: 0 },
+								unmount: { y: 100 },
+							}}
+						>
+							{errorApp.message || "Error! terjadi kendala"}
+						</Alert>
+					)}
 				</main>
 			</div>
 		</div>

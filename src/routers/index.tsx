@@ -8,7 +8,9 @@ import { IAppContextModel, useAppContext } from "../context/app.context";
 import SignUpView from "../pages/auth/signUpView";
 import ResetPasswordView from "../pages/auth/resetPasswordView";
 import AppLayout from "../layout/appLayout";
-import StockView from "../pages/stock/stockView";
+import StockCreateView from "../pages/stock/stockCreateView";
+import StockDetailView from "../pages/stock/stockDetailView";
+import StockListView from "../pages/stock/stockListView";
 
 export default function AppRouters() {
 	const { currentUser }: IAppContextModel = useAppContext();
@@ -39,7 +41,15 @@ export default function AppRouters() {
 		},
 		{
 			path: "/stock",
-			element: <StockView />,
+			element: <StockListView />,
+		},
+		{
+			path: "/stock/create",
+			element: <StockCreateView />,
+		},
+		{
+			path: "/stock/detail/:id",
+			element: <StockDetailView />,
 		},
 		{
 			path: "/my-profile",

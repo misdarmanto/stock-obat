@@ -10,11 +10,11 @@ import {
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../configs/firebase.config";
 import { useEffect, useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useHttp } from "../../hooks/useHttp";
 import { IUserRegisterPostRequestModel } from "../../models/user";
 import { IAppContextModel, useAppContext } from "../../context/app.context";
-import { CONFIG } from "../../configs/app.config";
+import { firebaseCRUD } from "../../firebase/firebaseFunctions";
 
 export default function SignUpInView() {
 	const { handlePostRequest } = useHttp();
@@ -46,19 +46,10 @@ export default function SignUpInView() {
 				userName: userName,
 				userEmail,
 				userPassword,
-				userPhoneNumber: userCredential.user.phoneNumber,
 				userProfilePicture: userCredential.user.photoURL,
 			};
 
-			localStorage.setItem(
-				CONFIG.localStorageKey,
-				JSON.stringify({ ...payload, isAuth: true })
-			);
-
-			await handlePostRequest({
-				path: "/users/register",
-				body: payload,
-			});
+			await firebaseCRUD.createData({ collectionName: "USERS", data: payload });
 
 			setCurrentUser({ ...payload, userIsAuth: true });
 			navigate("/");
