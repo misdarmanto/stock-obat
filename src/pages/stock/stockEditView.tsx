@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Breadcrumb } from "../../components/breadCumber";
 import MainLayout from "../../layout/mainLayout";
 import { Collections, firebaseCRUD } from "../../firebase/firebaseFunctions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IAppContextModel, useAppContext } from "../../context/app.context";
 import { IStock } from "../../models/stock";
 
-const StockCreateView = () => {
-	const navigation = [{ title: "Create", href: "", active: true }];
+const StockEditView = () => {
+	const navigation = [{ title: "Edit", href: "", active: true }];
 	const navigate = useNavigate();
+	const { stockId } = useParams();
 
 	const [namaObat, setnamaObat] = useState("");
 	const [tglMasuk, setTglMasuk] = useState("");
@@ -16,6 +17,7 @@ const StockCreateView = () => {
 	const [tglExpired, setTglExpired] = useState("");
 	const [batch, setBatch] = useState("");
 	const [total, setTotal] = useState<number>(0);
+	const [stock, setStock] = useState<IStock | any>();
 
 	const { setErrorApp }: IAppContextModel = useAppContext();
 
@@ -39,11 +41,11 @@ const StockCreateView = () => {
 				tglExpired,
 				batch,
 				total,
-				stock: total,
 			};
 
-			await firebaseCRUD.createData({
+			await firebaseCRUD.updateDocumentData({
 				collectionName: Collections.STOCKS,
+				documentId: stockId || "",
 				data: payload,
 			});
 
@@ -52,6 +54,30 @@ const StockCreateView = () => {
 			setErrorApp({ isError: true, message: error.message });
 		}
 	};
+
+	const getStock = async () => {
+		if (stockId) {
+			const result = await firebaseCRUD.getDocumentData({
+				collectionName: Collections.STOCKS,
+				documentId: stockId,
+			});
+			if (result) {
+				setnamaObat(result.namaObat);
+				setTglMasuk(result.tglMasuk);
+				setTglExpired(result.tglExpired);
+				setTotal(result.total);
+				setNamaBPF(result.namaBPF);
+				setBatch(result.batch);
+				setStock(result);
+			}
+		}
+	};
+
+	useEffect(() => {
+		getStock();
+	}, []);
+
+	if (!stock) return <div>Loading...</div>;
 
 	return (
 		<MainLayout>
@@ -145,7 +171,7 @@ const StockCreateView = () => {
 						onClick={handleSubmit}
 						className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-3 border border-blue-500 hover:border-transparent rounded"
 					>
-						Submit
+						Update
 					</button>
 				</div>
 			</div>
@@ -153,4 +179,4 @@ const StockCreateView = () => {
 	);
 };
 
-export default StockCreateView;
+export default StockEditView;

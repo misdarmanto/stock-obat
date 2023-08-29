@@ -1,4 +1,4 @@
-export interface IStocks {
+export interface IStock {
 	batch: string;
 	id?: string;
 	namaBPF: string;

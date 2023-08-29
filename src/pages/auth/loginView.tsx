@@ -73,7 +73,7 @@ export default function LoginView() {
 					<Button variant="gradient" fullWidth onClick={handleSubmit}>
 						Login
 					</Button>
-					<Typography variant="small" className="mt-6 flex justify-center">
+					{/* <Typography variant="small" className="mt-6 flex justify-center">
 						Belum punya account?
 						<Link to={"/sign-up"}>
 							<Typography
@@ -84,7 +84,7 @@ export default function LoginView() {
 								Sign In
 							</Typography>
 						</Link>
-					</Typography>
+					</Typography> */}
 				</CardFooter>
 			</Card>
 		</div>

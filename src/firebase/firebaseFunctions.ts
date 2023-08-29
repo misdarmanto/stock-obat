@@ -1,8 +1,17 @@
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { fireBase } from "../configs/firebase.config";
 
 interface IFireBaseCreateData {
 	collectionName: string;
+	data: any;
+}
+
+interface IFireBaseGetDocumentData {
+	collectionName: string;
+	documentId: string;
+}
+
+interface IFireBaseUpdateDocumentData extends IFireBaseGetDocumentData {
 	data: any;
 }
 
@@ -33,7 +42,28 @@ const getCollectionData = async ({ collectionName }: { collectionName: string })
 	}
 };
 
+const getDocumentData = async (props: IFireBaseGetDocumentData) => {
+	try {
+		const docRef = doc(fireBase.db, props.collectionName, props.documentId);
+		const docSnap = await getDoc(docRef);
+		if (docSnap.exists()) {
+			console.log("Document data:", docSnap.data());
+			return docSnap.data();
+		}
+		return null;
+	} catch (error: any) {
+		throw Error(error.message);
+	}
+};
+
+const updateDocumentData = async (props: IFireBaseUpdateDocumentData) => {
+	const docRef = doc(fireBase.db, props.collectionName, props.documentId);
+	await updateDoc(docRef, props.data);
+};
+
 export const firebaseCRUD = {
 	createData,
 	getCollectionData,
+	getDocumentData,
+	updateDocumentData,
 };

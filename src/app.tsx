@@ -12,6 +12,7 @@ export default function App() {
 	useEffect(() => {
 		setIsLoading(true);
 		onAuthStateChanged(auth, async (user) => {
+			console.log("___________record__________");
 			if (user) {
 				const payload: IUserModel = {
 					userIsAuth: true,

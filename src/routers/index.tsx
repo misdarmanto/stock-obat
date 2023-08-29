@@ -11,6 +11,7 @@ import AppLayout from "../layout/appLayout";
 import StockCreateView from "../pages/stock/stockCreateView";
 import StockDetailView from "../pages/stock/stockDetailView";
 import StockListView from "../pages/stock/stockListView";
+import StockEditView from "../pages/stock/stockEditView";
 
 export default function AppRouters() {
 	const { currentUser }: IAppContextModel = useAppContext();
@@ -24,14 +25,14 @@ export default function AppRouters() {
 			path: "/login",
 			element: <LoginView />,
 		},
-		{
-			path: "/sign-up",
-			element: <SignUpView />,
-		},
-		{
-			path: "/reset-password",
-			element: <ResetPasswordView />,
-		},
+		// {
+		// 	path: "/sign-up",
+		// 	element: <SignUpView />,
+		// },
+		// {
+		// 	path: "/reset-password",
+		// 	element: <ResetPasswordView />,
+		// },
 	];
 
 	const routerMain: { path: string; element: JSX.Element }[] = [
@@ -48,8 +49,12 @@ export default function AppRouters() {
 			element: <StockCreateView />,
 		},
 		{
-			path: "/stock/detail/:id",
+			path: "/stock/detail/:stockId",
 			element: <StockDetailView />,
+		},
+		{
+			path: "/stock/edit/:stockId",
+			element: <StockEditView />,
 		},
 		{
 			path: "/my-profile",

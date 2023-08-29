@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 import { IAppContextModel, useAppContext } from "../../context/app.context";
 import { Collections, firebaseCRUD } from "../../firebase/firebaseFunctions";
 import { useEffect, useState } from "react";
-import { IStocks } from "../../models/stock";
+import { IStock } from "../../models/stock";
 
 const StockListView = () => {
 	const navigation = [{ title: "Daftar Obat", href: "", active: true }];
 	const { setErrorApp }: IAppContextModel = useAppContext();
-	const [stockList, setStockList] = useState<IStocks[]>([]);
+	const [stockList, setStockList] = useState<IStock[]>([]);
 
 	const tableData = {
 		header: [
@@ -45,15 +45,25 @@ const StockListView = () => {
 	return (
 		<MainLayout>
 			<Breadcrumb title={"Stok Obat"} navigation={navigation} />
-			<div className="flex flex-col md:flex-row justify-between mb-5 md:px-0">
-				<Link to={"/stock/create"}>
-					<button
-						type="button"
-						className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-3 border border-blue-500 hover:border-transparent rounded"
-					>
-						Tambah Data
-					</button>
-				</Link>
+			<div className="flex flex-col gap-2 md:flex-row justify-between mb-5 md:px-0">
+				<div className="flex flex-row flex-wrap gap-2">
+					<Link to={"/stock/create"}>
+						<button
+							type="button"
+							className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-3 border border-blue-500 hover:border-transparent rounded"
+						>
+							Tambah Data
+						</button>
+					</Link>
+					<div>
+						<button
+							type="button"
+							className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-3 border border-blue-500 hover:border-transparent rounded"
+						>
+							Download
+						</button>
+					</div>
+				</div>
 				<div className="w-full  md:w-1/5">
 					<input
 						name="search"
