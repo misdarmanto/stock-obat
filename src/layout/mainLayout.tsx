@@ -3,7 +3,7 @@ import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { Disclosure } from "@headlessui/react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { BiBox, BiCross, BiHome, BiMenu } from "react-icons/bi";
+import { BiBox, BiCross, BiHome, BiMenu, BiShoppingBag } from "react-icons/bi";
 import { signOutFirebase } from "../utils/firebase";
 import { IAppContextModel, useAppContext } from "../context/app.context";
 import { Alert } from "@material-tailwind/react";
@@ -36,10 +36,11 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 	};
 
 	const dashboard = { name: "Dashboard", icon: BiHome, href: "/" };
+	const penjualanMenu = { name: "Penjualan", icon: BiShoppingBag, href: "/penjualan" };
 	const stockMenu = { name: "Stok Obat", icon: BiBox, href: "/stock" };
 	const myProfile = { name: "My Profile", icon: BsPerson, href: "/my-profile" };
 
-	const NAVIGATIONS_LIST = [dashboard, stockMenu, myProfile];
+	const NAVIGATIONS_LIST = [dashboard, penjualanMenu, stockMenu, myProfile];
 
 	const [navigationActive, setNavigationActive] = useState("Dashboard");
 
@@ -77,7 +78,7 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 					</div>
 				)}
 
-				{item.children && (
+				{/* {item.children && (
 					<Disclosure
 						as="div"
 						key={item.name}
@@ -147,7 +148,7 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 							);
 						}}
 					</Disclosure>
-				)}
+				)} */}
 			</>
 		);
 	});

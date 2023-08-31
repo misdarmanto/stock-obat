@@ -12,6 +12,7 @@ import StockCreateView from "../pages/stock/stockCreateView";
 import StockDetailView from "../pages/stock/stockDetailView";
 import StockListView from "../pages/stock/stockListView";
 import StockEditView from "../pages/stock/stockEditView";
+import PenjualanListView from "../pages/penjualan/penjualanListView";
 
 export default function AppRouters() {
 	const { currentUser }: IAppContextModel = useAppContext();
@@ -55,6 +56,10 @@ export default function AppRouters() {
 		{
 			path: "/stock/edit/:stockId",
 			element: <StockEditView />,
+		},
+		{
+			path: "/penjualan",
+			element: <PenjualanListView />,
 		},
 		{
 			path: "/my-profile",

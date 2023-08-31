@@ -1,4 +1,4 @@
-import TableStyle from "../../components/tableStyle";
+import StockTableView from "./stockTableView";
 import MainLayout from "../../layout/mainLayout";
 import { Breadcrumb } from "../../components/breadCumber";
 import { Link } from "react-router-dom";
@@ -6,24 +6,73 @@ import { IAppContextModel, useAppContext } from "../../context/app.context";
 import { Collections, firebaseCRUD } from "../../firebase/firebaseFunctions";
 import { useEffect, useState } from "react";
 import { IStock } from "../../models/stock";
+import moment from "moment";
+import * as XLSX from "xlsx";
 
 const StockListView = () => {
 	const navigation = [{ title: "Daftar Obat", href: "", active: true }];
 	const { setErrorApp }: IAppContextModel = useAppContext();
 	const [stockList, setStockList] = useState<IStock[]>([]);
-	const [isLoading, setIsLoading] = useState(true)
+	const [isLoading, setIsLoading] = useState(true);
 
 	const tableData = {
-		header: [
-			"nama",
-			"tgl masuk",
-			"expired",
-			"batch",
-			"Stok",
-			"update stok",
-			"Action",
-		],
+		header: ["nama", "tgl masuk", "expired", "batch", "Stok", "Action"],
 		body: [stockList],
+	};
+
+	const download = async () => {
+		try {
+			let xlsRows: any[] = [];
+			await stockList.map((value: IStock, index: number) => {
+				let documentItem = {
+					namaObat: value.namaObat,
+					namaBPF: value.namaBPF,
+					tglMasuk: value.tglMasuk,
+					tglExpired: value.tglExpired,
+					batch: value.batch,
+					stock: value.stock,
+					jumlahMasuk: value.total,
+				};
+				xlsRows.push(documentItem);
+			});
+
+			let xlsHeader = [
+				"Nama Obat",
+				"BPF",
+				"Tgl Masuk",
+				"Tgl Expired",
+				"Batch",
+				"Stok",
+				"Jumlah Masuk",
+			];
+			let createXLSLFormatObj = [];
+			createXLSLFormatObj.push(xlsHeader);
+			xlsRows.map((value: IStock, i) => {
+				let innerRowData = [];
+				innerRowData.push(value.namaObat);
+				innerRowData.push(value.namaBPF);
+				innerRowData.push(value.tglMasuk);
+				innerRowData.push(value.tglExpired);
+				innerRowData.push(value.batch);
+				innerRowData.push(value.stock);
+				innerRowData.push(value.total);
+				createXLSLFormatObj.push(innerRowData);
+			});
+
+			/* File Name */
+			let filename = `Data Obat ${moment().format("DD-MM-YYYY")}.xlsx`;
+
+			/* Sheet Name */
+			let ws_name = "Sheet1";
+			if (typeof console !== "undefined") console.log(new Date());
+			let wb = XLSX.utils.book_new(),
+				ws = XLSX.utils.aoa_to_sheet(createXLSLFormatObj);
+
+			XLSX.utils.book_append_sheet(wb, ws, ws_name);
+			XLSX.writeFile(wb, filename);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const getStokObat = async () => {
@@ -36,7 +85,7 @@ const StockListView = () => {
 			setErrorApp({ isError: true, message: error.message });
 		}
 
-		setIsLoading(false)
+		setIsLoading(false);
 	};
 
 	useEffect(() => {
@@ -61,6 +110,7 @@ const StockListView = () => {
 					<div>
 						<button
 							type="button"
+							onClick={download}
 							className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-3 border border-blue-500 hover:border-transparent rounded"
 						>
 							Download
@@ -76,7 +126,7 @@ const StockListView = () => {
 					/>
 				</div>
 			</div>
-			<TableStyle tableData={tableData} />
+			<StockTableView tableData={tableData} />
 		</MainLayout>
 	);
 };
