@@ -7,6 +7,7 @@ import { BiBox, BiCross, BiHome, BiMenu, BiShoppingBag } from "react-icons/bi";
 import { signOutFirebase } from "../utils/firebase";
 import { IAppContextModel, useAppContext } from "../context/app.context";
 import { Alert } from "@material-tailwind/react";
+import { ModalStyle } from "../components/modal";
 
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(" ");
@@ -17,10 +18,12 @@ type Props = {
 };
 
 const MainLayout: React.FC<Props> = ({ children }) => {
-	const { setCurrentUser, setErrorApp, errorApp }: IAppContextModel = useAppContext();
+	const { setCurrentUser, setErrorApp, errorApp }: IAppContextModel =
+		useAppContext();
 	const navigate = useNavigate();
 
 	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const [openModalLogout, setOpenModalLogout] = useState(false);
 
 	const handleSignOut = () => {
 		signOutFirebase();
@@ -36,9 +39,17 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 	};
 
 	const dashboard = { name: "Dashboard", icon: BiHome, href: "/" };
-	const penjualanMenu = { name: "Penjualan", icon: BiShoppingBag, href: "/penjualan" };
+	const penjualanMenu = {
+		name: "Penjualan",
+		icon: BiShoppingBag,
+		href: "/penjualan",
+	};
 	const stockMenu = { name: "Stok Obat", icon: BiBox, href: "/stock" };
-	const myProfile = { name: "My Profile", icon: BsPerson, href: "/my-profile" };
+	const myProfile = {
+		name: "My Profile",
+		icon: BsPerson,
+		href: "/my-profile",
+	};
 
 	const NAVIGATIONS_LIST = [dashboard, penjualanMenu, stockMenu, myProfile];
 
@@ -48,10 +59,15 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 		return (
 			<>
 				{!item.children && (
-					<div key={item.name} onClick={() => setNavigationActive(item.name)}>
+					<div
+						key={item.name}
+						onClick={() => setNavigationActive(item.name)}
+					>
 						<NavLink
 							style={({ isActive }) =>
-								isActive ? { backgroundColor: "#f3f3f3" } : undefined
+								isActive
+									? { backgroundColor: "#f3f3f3" }
+									: undefined
 							}
 							to={item.href}
 						>
@@ -196,7 +212,9 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 									className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
 									onClick={() => setSidebarOpen(false)}
 								>
-									<span className="sr-only">Close sidebar</span>
+									<span className="sr-only">
+										Close sidebar
+									</span>
 									<BiCross
 										className="h-6 w-6 text-white"
 										aria-hidden="true"
@@ -205,7 +223,9 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 							</div>
 						</Transition.Child>
 						<div className="mt-5 flex-1 h-0 overflow-y-auto scrollbar-hide">
-							<nav className="px-2 space-y-1">{renderListNavigation}</nav>
+							<nav className="px-2 space-y-1">
+								{renderListNavigation}
+							</nav>
 						</div>
 					</div>
 				</Transition.Child>
@@ -226,7 +246,9 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 							</span>
 						</h1>
 						<div className="mt-5 flex-1 flex flex-col">
-							<nav className="flex-1 space-y-1">{renderListNavigation}</nav>
+							<nav className="flex-1 space-y-1">
+								{renderListNavigation}
+							</nav>
 						</div>
 					</div>
 				</div>
@@ -258,8 +280,8 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 								>
 									<Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-2xl shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
 										<button
-											type="submit"
-											onClick={handleSignOut}
+											type="button"
+											onClick={() => setOpenModalLogout(!openModalLogout)}
 											className="block px-4 py-2 text-sm text-gray-700"
 										>
 											Logout
@@ -282,14 +304,18 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 				</div>
 
 				<main className="flex-1 relative overflow-y-auto focus:outline-none bg-gray-100">
-					<div className="px-2 py-2 md:py-6 md:px-6 m-0">{children}</div>
+					<div className="px-2 py-2 md:py-6 md:px-6 m-0">
+						{children}
+					</div>
 
 					{errorApp.isError && (
 						<Alert
 							open={true}
 							color="red"
 							className="absolute z-index-20 right-5 bottom-5 w-96"
-							onClose={() => setErrorApp({ isError: false, message: "" })}
+							onClose={() =>
+								setErrorApp({ isError: false, message: "" })
+							}
 							animate={{
 								mount: { y: 0 },
 								unmount: { y: 100 },
@@ -307,6 +333,14 @@ const MainLayout: React.FC<Props> = ({ children }) => {
 		<>
 			{renderDesktopMenu}
 			{renderMobileMenu}
+			<ModalStyle
+				open={openModalLogout}
+				setOpen={setOpenModalLogout}
+				onYes={handleSignOut}
+				onNo={() => null}
+				title="Warning"
+				body="Apakah Anda Yakin Ingin Keluar?"
+			/>
 		</>
 	);
 };
