@@ -1,4 +1,3 @@
-import StockTableView from './stockTableView'
 import MainLayout from '../../layout/mainLayout'
 import { Breadcrumb } from '../../components/breadCumber'
 import { Link } from 'react-router-dom'
@@ -8,15 +7,16 @@ import { useEffect, useState } from 'react'
 import { IStock } from '../../models/stock'
 import moment from 'moment'
 import * as XLSX from 'xlsx'
+import StockTableView from './stockTableView'
 
-const StockListView = () => {
-  const navigation = [{ title: 'Daftar Obat', href: '', active: true }]
+const HistoryPenjualanListView = () => {
+  const navigation = [{ title: 'History Penjualan Obat', href: '', active: true }]
   const { setErrorApp }: IAppContextModel = useAppContext()
   const [stockList, setStockList] = useState<IStock[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const tableData = {
-    header: ['nama', 'tgl masuk', 'expired', 'batch', 'Stok', 'Action'],
+    header: ['No', 'nama', 'batch', 'Terjual', 'tgl'],
     body: [stockList]
   }
 
@@ -96,17 +96,9 @@ const StockListView = () => {
 
   return (
     <MainLayout>
-      <Breadcrumb title={'Stok Obat'} navigation={navigation} />
+      <Breadcrumb title={'History'} navigation={navigation} />
       <div className='flex flex-col gap-2 md:flex-row justify-between mb-5 md:px-0'>
         <div className='flex flex-row flex-wrap gap-2'>
-          <Link to={'/stock/create'}>
-            <button
-              type='button'
-              className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-3 border border-blue-500 hover:border-transparent rounded'
-            >
-              Tambah Data
-            </button>
-          </Link>
           <div>
             <button
               type='button'
@@ -131,4 +123,4 @@ const StockListView = () => {
   )
 }
 
-export default StockListView
+export default HistoryPenjualanListView
