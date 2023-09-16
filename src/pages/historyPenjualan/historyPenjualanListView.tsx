@@ -8,59 +8,46 @@ import { IStock } from '../../models/stock'
 import moment from 'moment'
 import * as XLSX from 'xlsx'
 import StockTableView from './stockTableView'
+import { IHistoryPenjulan } from '../../models/historyPenjualan'
 
 const HistoryPenjualanListView = () => {
   const navigation = [{ title: 'History Penjualan Obat', href: '', active: true }]
   const { setErrorApp }: IAppContextModel = useAppContext()
-  const [stockList, setStockList] = useState<IStock[]>([])
+  const [historyPenjualan, setHistoryPenjualan] = useState<IHistoryPenjulan[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const tableData = {
-    header: ['No', 'nama', 'batch', 'Terjual', 'tgl'],
-    body: [stockList]
+    header: ['No', 'nama', 'batch', 'terjual', 'tgl'],
+    body: [historyPenjualan]
   }
 
   const download = async () => {
     try {
       let xlsRows: any[] = []
-      await stockList.map((value: IStock, index: number) => {
+      historyPenjualan.map((value: IHistoryPenjulan) => {
         let documentItem = {
           namaObat: value.namaObat,
-          namaBPF: value.namaBPF,
-          tglMasuk: value.tglMasuk,
-          tglExpired: value.tglExpired,
           batch: value.batch,
-          stock: value.stock,
-          jumlahMasuk: value.total
+          total: value.total,
+          time: value.time
         }
         xlsRows.push(documentItem)
       })
 
-      let xlsHeader = [
-        'Nama Obat',
-        'BPF',
-        'Tgl Masuk',
-        'Tgl Expired',
-        'Batch',
-        'Stok',
-        'Jumlah Masuk'
-      ]
+      let xlsHeader = ['Nama Obat', 'Batch', 'Stok', 'Tgl']
       let createXLSLFormatObj = []
       createXLSLFormatObj.push(xlsHeader)
-      xlsRows.map((value: IStock, i) => {
+      xlsRows.map((value: IHistoryPenjulan, i) => {
         let innerRowData = []
         innerRowData.push(value.namaObat)
-        innerRowData.push(value.namaBPF)
-        innerRowData.push(value.tglMasuk)
-        innerRowData.push(value.tglExpired)
         innerRowData.push(value.batch)
-        innerRowData.push(value.stock)
         innerRowData.push(value.total)
+        innerRowData.push(value.time)
         createXLSLFormatObj.push(innerRowData)
       })
 
       /* File Name */
-      let filename = `Data Obat ${moment().format('DD-MM-YYYY')}.xlsx`
+      let filename = `Data History Penjualan ${moment().format('DD-MM-YYYY')}.xlsx`
 
       /* Sheet Name */
       let ws_name = 'Sheet1'
@@ -78,9 +65,12 @@ const HistoryPenjualanListView = () => {
   const getStokObat = async () => {
     try {
       const result = await firebaseCRUD.getCollectionData({
-        collectionName: Collections.STOCKS
+        collectionName: Collections.HISTORY_PENJUALAN
       })
-      setStockList(result)
+
+      setHistoryPenjualan(result)
+      console.log('________history')
+      console.log(result)
     } catch (error: any) {
       setErrorApp({ isError: true, message: error.message })
     }

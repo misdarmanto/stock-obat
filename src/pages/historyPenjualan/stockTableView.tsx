@@ -1,3 +1,4 @@
+import { IHistoryPenjulan } from '../../models/historyPenjualan'
 import { IStock } from '../../models/stock'
 
 import { useEffect, useState } from 'react'
@@ -11,10 +12,10 @@ export interface ITableData {
 }
 
 const StockTableView = (props: ITableData) => {
-  const [tableBody, setTableBody] = useState<IStock[]>([])
+  const [tableBody, setTableBody] = useState<IHistoryPenjulan[]>([])
 
   useEffect(() => {
-    const data: IStock[] = []
+    const data: IHistoryPenjulan[] = []
     props.tableData.body.forEach((items: any) => {
       data.push(...items)
     })
@@ -39,7 +40,7 @@ const StockTableView = (props: ITableData) => {
         </thead>
         <tbody>
           {tableBody.length !== 0 &&
-            tableBody.map((item: IStock, index: number) => (
+            tableBody.map((item: IHistoryPenjulan, index: number) => (
               <tr
                 key={index}
                 className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'
@@ -47,8 +48,8 @@ const StockTableView = (props: ITableData) => {
                 <td className='px-6 py-4'>{index + 1}</td>
                 <td className='px-6 py-4'>{item.namaObat || '_'}</td>
                 <td className='px-6 py-4'>{item.batch || '_'}</td>
-                <td className='px-6 py-4'>{item.stock || '_'}</td>
-                <td className='px-6 py-4'>{dateTime.toDateString()}</td>
+                <td className='px-6 py-4'>{item.total || '_'}</td>
+                <td className='px-6 py-4'>{item.time || '_'}</td>
               </tr>
             ))}
         </tbody>

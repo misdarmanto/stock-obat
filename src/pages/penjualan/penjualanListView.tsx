@@ -1,61 +1,88 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Breadcrumb } from '../../components/breadCumber'
 import MainLayout from '../../layout/mainLayout'
 import { Collections, firebaseCRUD } from '../../firebase/firebaseFunctions'
 import { useNavigate } from 'react-router-dom'
 import { IAppContextModel, useAppContext } from '../../context/app.context'
 import { IStock } from '../../models/stock'
+import { IHistoryPenjulan } from '../../models/historyPenjualan'
 
 const ProductTerjualListView = () => {
   const navigation = [{ title: 'Create', href: '', active: true }]
   const navigate = useNavigate()
 
   const [namaObat, setnamaObat] = useState('')
-  const [tglMasuk, setTglMasuk] = useState('')
-  const [namaBPF, setNamaBPF] = useState('')
-  const [tglExpired, setTglExpired] = useState('')
+  const [time, setTime] = useState('')
   const [batch, setBatch] = useState('')
   const [total, setTotal] = useState<number>(0)
-
   const { setErrorApp }: IAppContextModel = useAppContext()
+  const [isLoading, setIsLoading] = useState(true)
+  const [stockList, setStockList] = useState<IStock[]>([])
+  const [obatSelected, setObatSelected] = useState<IStock | any>()
+
+  const getStokObat = async () => {
+    try {
+      const result = await firebaseCRUD.getCollectionData({
+        collectionName: Collections.STOCKS
+      })
+      if (result) {
+        setStockList(result)
+        setObatSelected(result[0])
+      }
+    } catch (error: any) {
+      setErrorApp({ isError: true, message: error.message })
+    }
+
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    getStokObat()
+  }, [])
 
   const handleSubmit = async () => {
     try {
-      const checkField =
-        namaObat === '' ||
-        namaBPF === '' ||
-        tglMasuk === '' ||
-        tglExpired === '' ||
-        batch === '' ||
-        total === 0
-
+      const checkField = obatSelected === null || total === 0 || time === ''
       if (checkField) {
         throw Error('mohon lengkapi semua data')
       }
-      const payload: IStock = {
-        namaObat,
-        namaBPF,
-        tglMasuk,
-        tglExpired,
-        batch,
-        total,
-        stock: total
+      const newTotalStock = obatSelected?.stock - total
+      if (newTotalStock < 0) {
+        throw Error('stock tidak cukup')
+      }
+
+      const payload: IHistoryPenjulan = {
+        namaObat: obatSelected?.namaObat,
+        time: time,
+        batch: obatSelected?.batch,
+        total: total,
+        obatId: obatSelected?.id
       }
 
       await firebaseCRUD.createData({
-        collectionName: Collections.STOCKS,
+        collectionName: Collections.HISTORY_PENJUALAN,
         data: payload
       })
 
-      navigate('/stock')
+      await firebaseCRUD.updateDocumentData({
+        collectionName: Collections.STOCKS,
+        documentId: obatSelected.id,
+        data: { stock: newTotalStock }
+      })
+
+      console.log(payload)
+
+      navigate('/history')
     } catch (error: any) {
       setErrorApp({ isError: true, message: error.message })
     }
   }
 
+  if (isLoading) return <div>loading...</div>
+
   return (
     <MainLayout>
-      <Breadcrumb title={'Stok Obat'} navigation={navigation} />
+      <Breadcrumb title={'Penjualan Obat'} navigation={navigation} />
       <div className='bg-white rounded p-5 sm:p-10'>
         <div className='sm:my-6 flex flex-col sm:flex-row gap-5'>
           <div className='w-full sm:w-1/2'>
@@ -63,11 +90,14 @@ const ProductTerjualListView = () => {
               Nama Obat
             </label>
             <select
-              onChange={(e) => setnamaObat(e.target.value)}
+              onChange={(e) => setObatSelected(JSON.parse(e.target.value))}
               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             >
-              <option value={'admin'}>admin</option>
-              <option value={'superAdmin'}>super admin</option>
+              {stockList.map((item: IStock, index: number) => (
+                <option key={index} value={JSON.stringify(item)}>
+                  {item.namaObat}
+                </option>
+              ))}
             </select>
           </div>
           <div className='w-full sm:w-1/2'>
@@ -89,8 +119,8 @@ const ProductTerjualListView = () => {
             </label>
             <input
               type='date'
-              value={tglExpired}
-              onChange={(e) => setTglExpired(e.target.value)}
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 '
               required
             />
